@@ -1,0 +1,61 @@
+﻿@page "/product"
+@inject IProductService _productService
+@inject ICartService _cartService
+@inject NotificationService _notificationService
+
+<PageTitle>Product list</PageTitle>
+<RadzenButton Text="text"></RadzenButton>
+
+<h3>Product list</h3>
+
+<div class="row">
+    @foreach (var p in _productList)
+    {
+        <div class="card m-2" style="width: 18rem;">
+        <EditForm Model="@p" onclick="@(() => AddToShoppingCart(@p))">
+            <img class="card-img-top" src=@p.ImageUrl alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">@p.Name</h5>
+                <p class="card-text">@p.Description</p>
+                <p class="card-text">@p.UnitPrice.ToString("c")</p>
+                <p> <InputNumber @bind-Value="@Count"></InputNumber> </p>
+                <p> <button class="btn btn-primary" type="submit">Add to cart</button> </p>
+            </div>
+        </EditForm>
+        </div>
+    }
+</div>
+
+@code {
+    public int Count { get; set; } = 1;
+
+    private IEnumerable<ProductDto> _productList = new List<ProductDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _productList = await _productService.GetAll();
+    }
+
+    private async Task AddToShoppingCart(ProductDto p)
+    {
+        CartItem cartItem = new CartItem()
+            {
+                Product = p,
+                Count = Count,
+            };
+
+        await _cartService.Increment(cartItem);
+        Count = 1;
+        var notificationMessage = new NotificationMessage
+            {
+                Severity = NotificationSeverity.Info,
+                Summary = "Info",
+                Detail = "Dodałeś przedmiot do koszyka",
+                Duration = 4000,
+                CloseOnClick = true,
+                Payload = DateTime.Now
+            };
+
+        _notificationService.Notify(notificationMessage);
+    }
+}

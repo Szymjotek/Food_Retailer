@@ -1,0 +1,218 @@
+﻿@page "/product/edit/{id:int}"
+@inject IProductService _productService
+@inject NavigationManager _navigationManager
+@inject IFileService _fileService
+
+<PageTitle>Edit product</PageTitle>
+<h1>Edit product</h1>
+
+<EditForm Model="@_product" OnValidSubmit="@UpdateProduct">
+    <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="@true" />
+    <ValidationSummary />
+    <div class="form-group">
+        <label>Name: </label>
+        <InputText @bind-Value="@_product.Name" class="form-control" />
+        <ValidationMessage For="@(() => _product.Name)" />
+    </div>
+    <div class="form-group">
+        <label>Description: </label>
+        <InputText @bind-Value="@_product.Desc" class="form-control" />
+        <ValidationMessage For="@(() => _product.Desc)" />
+    </div>
+    <div class="form-group">
+        <label>Price: </label>
+        <InputNumber @bind-Value="@_product.UnitPrice" class="form-control" />
+        <ValidationMessage For="@(() => _product.UnitPrice)" />
+    </div>
+    <div class="form-group">
+        <label>Image: </label>
+        <InputFile OnChange="HandleImageUpload"></InputFile>
+    </div>
+
+    <div class="form-group">
+        <img src="@_product.ImageUrl" width="240">
+    </div>
+    <br />
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit"> <span class="oi oi-pencil"></span> Update </button>
+        <button @onclick="BackToList" class="btn btn-secondary" type="button">
+            <span class="oi oi-media-skip-backward"></span> 
+             Back To List 
+         </button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private FluentValidationValidator? _fluentValidationValidator;
+
+    private UpdateProductDto _product = null;
+    private string _oldImageUrl = null;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        var p = _productService.GetById(Id);
+        _product = new UpdateProductDto() { Id = p.Id, Name = p.Name, Desc = p.Description, UnitPrice = p.UnitPrice, ImageUrl = p.ImageUrl };
+        _oldImageUrl = _product.ImageUrl;
+    }
+
+    private void UpdateProduct()
+    {
+        if ((_oldImageUrl != "/images/no-image-icon.png") 
+            && (_oldImageUrl != _product.ImageUrl))
+        {
+            _fileService.DeleteFile(_oldImageUrl);
+        }
+
+        _productService.Update(_product);
+        _navigationManager.NavigateTo("/product");
+    }
+
+    private void BackToList()
+    {
+        _navigationManager.NavigateTo("/product");
+    }
+
+    private async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        if (e.GetMultipleFiles().Count > 0)
+        {
+            foreach (var file in e.GetMultipleFiles())
+            {
+                System.IO.FileInfo fileInfo = new System.IO.FileInfo(file.Name);
+                if (fileInfo.Extension.ToLower() == ".jpg" ||
+                    fileInfo.Extension.ToLower() == ".png" ||
+                    fileInfo.Extension.ToLower() == ".jpeg")
+                {
+                    _product.ImageUrl = await _fileService.UploadFile(file);
+                }
+                else
+                {
+                    //await _jsRuntime.ToastrError("Please select .jpg/.jpeg/.png file only");
+                    return;
+                }
+            }
+        }
+    }
+}
+
+@*@page "/product/edit/{id:int}"
+@inject IProductService _productService
+@inject NavigationManager _navigationManager
+
+<PageTitle>Edit product</PageTitle>
+<h1>Edit product</h1>
+
+<EditForm Model="@_product" OnValidSubmit="@UpdateProduct">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label>Name: </label>
+        <InputText @bind-Value="@_product.Name" class="form-control" />
+        <ValidationMessage For="@(() => _product.Name)" />
+    </div>
+    <div class="form-group">
+        <label>Description: </label>
+        <InputText @bind-Value="@_product.Desc" class="form-control" />
+        <ValidationMessage For="@(() => _product.Desc)" />
+    </div>
+    <div class="form-group">
+        <label>Price: </label>
+        <InputNumber @bind-Value="@_product.UnitPrice" class="form-control" />
+        <ValidationMessage For="@(() => _product.UnitPrice)" />
+    </div>
+    <br />
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit"> <span class="oi oi-pencil"></span> Update </button>
+        <button @onclick="BackToList" class="btn btn-secondary" type="button">
+            <span class="oi oi-media-skip-backward"></span> 
+             Back To List 
+         </button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private UpdateProductDto _product = null;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        var p = _productService.GetById(Id);
+        _product = new UpdateProductDto() { Id = p.Id, Name = p.Name, Desc = p.Description, UnitPrice = p.UnitPrice };
+    }
+
+    private void UpdateProduct()
+    {
+        _productService.Update(_product);
+        _navigationManager.NavigateTo("/product");
+    }
+
+    private void BackToList()
+    {
+        _navigationManager.NavigateTo("/product");
+    }
+}
+
+*@@*@page "/product/edit/{id:int}"
+@inject IProductService _productService
+@inject NavigationManager _navigationManager
+
+<PageTitle>Edit product</PageTitle>
+<h1>Edit product</h1>
+
+<EditForm Model="@_product" OnSubmit="@UpdateProduct">
+    <div class="form-group">
+        <label>Name: </label>
+        <InputText @bind-Value="@_product.Name" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Description: </label>
+        <InputText @bind-Value="@_product.Desc" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Price: </label>
+        <InputNumber @bind-Value="@_product.UnitPrice" class="form-control" />
+    </div>
+    <br />
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit"> <span class="oi oi-pencil"></span> Update </button>
+        <button @onclick="BackToList" class="btn btn-secondary" type="button">
+            <span class="oi oi-media-skip-backward" /> 
+             Back To List 
+        </button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private UpdateProductDto _product = null;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        var p = _productService.GetById(Id);
+        _product = new UpdateProductDto() { Id = p.Id, Name = p.Name, Desc = p.Description, UnitPrice = p.UnitPrice };
+    }
+
+    private void UpdateProduct()
+    {
+        _productService.Update(_product);
+        _navigationManager.NavigateTo("/product");
+    }
+
+    private void BackToList()
+    {
+        _navigationManager.NavigateTo("/product");
+    }
+}*@
+
+
+

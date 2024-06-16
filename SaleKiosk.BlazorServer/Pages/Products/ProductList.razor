@@ -1,0 +1,279 @@
+﻿@page "/product"
+@inject IProductService _productService
+@inject NavigationManager _navigationManager
+@inject IJSRuntime _js
+
+<PageTitle>Product list</PageTitle>
+
+<RadzenButton Text="aqq"></RadzenButton>
+
+<h1>Product list</h1>
+<br/>
+<div>
+    <div>
+        <a href="product/create" class="btn bg-primary"><span class="oi oi-plus" aria-hidden="true"></span> Create new product </a>
+    </div>
+    <br />
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in _productList)
+                {
+                    <tr>
+                        <td>
+                            <img src="@p.ImageUrl" width="64">
+                        </td>
+                        <td>@p.Name</td>
+                        <td>@p.Description</td>
+                        <td>@p.UnitPrice</td>
+                        <td>
+                            <button class="btn bg-warning" @onclick="@(()=>UpdateProduct(@p.Id))"><span class="oi oi-pencil" aria-hidden="true"></span> Edit </button>
+                            <button class="btn bg-danger" @onclick="@(()=>DeleteProduct(@p.Id))"><span class="oi oi-delete" aria-hidden="true"></span> Delete </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private List<ProductDto> _productList = null;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        _productList = _productService.GetAll();
+    }
+
+    protected async Task DeleteProduct(int id)
+    {
+        var product = _productList.First(q => q.Id == id);
+        var confirm = await _js.InvokeAsync<bool>("confirm", $"Are You Sure You Want To Delete {product.Name}?");
+        if (confirm)
+        {
+            _productService.Delete(id);
+            OnInitialized();
+        }
+    }
+
+    protected void UpdateProduct(int id)
+    {
+        _navigationManager.NavigateTo($"product/edit/{id}");
+    }
+}
+
+
+
+@*@page "/product"
+@inject IProductService _productService
+@inject IJSRuntime _js
+
+<PageTitle>Product list</PageTitle>
+<h1>Product list</h1>
+    
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in ProductList)
+            {
+                <tr>
+                    <td>@p.Name</td>
+                    <td>@p.Description</td>
+                    <td>@p.UnitPrice</td>
+                    <td>
+                        <button class="btn bg-danger" @onclick="()=>DeleteProduct(p.Id)"> Delete </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@code {
+    private List<ProductDto> ProductList = null;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ProductList = _productService.GetAll();
+    }
+
+    protected async Task DeleteProduct(int id)
+    {
+        var product = ProductList.First(q => q.Id == id);
+        var confirm = await _js.InvokeAsync<bool>("confirm", $"Are You Sure You Want To Delete {product.Name}?");
+        if (confirm)
+        {
+            _productService.Delete(id);
+            OnInitialized();
+        }
+    }
+}
+*@
+
+@*@page "/product"
+@inject IProductService _productService
+
+<PageTitle>Product list</PageTitle>
+<h1>Product list</h1>
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in ProductList)
+            {
+                <tr>
+                    <td>@p.Name</td>
+                    <td>@p.Description</td>
+                    <td>@p.UnitPrice</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@code {
+    private List<ProductDto> ProductList = null;
+    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ProductList = _productService.GetAll();
+    }
+}
+*@
+
+
+
+
+
+
+@*@page "/product"
+@inject IProductService ProductService
+
+<PageTitle>Product</PageTitle>
+<h1>Product</h1>
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in ProductList)
+            {
+                <tr>
+                    <td>@p.Name</td>
+                    <td>@p.Description</td>
+                    <td>@p.UnitPrice</td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
+
+@code {
+    private List<ProductDto> ProductList;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ProductList = ProductService.GetAll();
+    }
+}*@
+
+
+
+
+@*@page "/product"
+
+<PageTitle>Product</PageTitle>
+<h1>Product</h1>
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var p in ProductList)
+            {
+                <tr>
+                    <td>@p.Name</td>
+                    <td>@p.Description</td>
+                    <td>@p.UnitPrice</td>
+                </tr>
+            }
+        </tbody>
+        
+    </table>
+</div>
+
+@code {
+    public List<ProductDto> ProductList = new List<ProductDto>()
+    {
+        new ProductDto()
+        {
+            Name = "Kawa",
+            Description = "Czarna kawa",
+            UnitPrice = 2m
+        },
+        new ProductDto()
+        {
+            Name = "Herbata",
+            Description = "Pyszna herbata",
+            UnitPrice = 4m
+        }
+    };
+
+    public ProductDto MyProduct = new ProductDto()
+        {
+            Name = "Kawa",
+            Description = "Czarna kawa",
+            UnitPrice = 2m
+        };
+
+    public class ProductDto
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public decimal UnitPrice { get; set; }
+    }
+}
+*@
