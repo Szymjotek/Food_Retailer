@@ -24,15 +24,23 @@ namespace SaleKiosk.Application.Services
                 throw new BadRequestException("Product is null");
             }
 
+            // Check if the supplier exists
+            var supplier = _uow.SupplierRepository.Get(dto.SupplierId);
+            if (supplier == null)
+            {
+                throw new NotFoundException("Supplier not found");
+            }
+
             var id = _uow.ProductRepository.GetMaxId() + 1;
             var product = _mapper.Map<Product>(dto);
             product.Id = id;
+            product.SupplierId = dto.SupplierId;
 
-            // set default image url if user did not souuport its own
+            // set default image url if user did not support its own
             product.ImageUrl = String.IsNullOrEmpty(dto.ImageUrl)
-                ? "/images/no-image-icon.png" 
+                ? "/images/no-image-icon.png"
                 : dto.ImageUrl;
-            
+
             _uow.ProductRepository.Insert(product);
             _uow.Commit();
 
@@ -44,7 +52,7 @@ namespace SaleKiosk.Application.Services
             var product = _uow.ProductRepository.Get(id);
             if (product == null)
             {
-               throw new NotFoundException("Product not found");
+                throw new NotFoundException("Product not found");
             }
 
             _uow.ProductRepository.Delete(product);
@@ -89,11 +97,19 @@ namespace SaleKiosk.Application.Services
                 throw new NotFoundException("Product not found");
             }
 
+            // Check if the supplier exists
+            var supplier = _uow.SupplierRepository.Get(dto.SupplierId);
+            if (supplier == null)
+            {
+                throw new NotFoundException("Supplier not found");
+            }
+
             product.Name = dto.Name;
             product.Description = dto.Desc;
             product.UnitPrice = dto.UnitPrice;
+            product.SupplierId = dto.SupplierId;
 
-            // set default image url if user did not souuport its own
+            // set default image url if user did not support its own
             product.ImageUrl = String.IsNullOrEmpty(dto.ImageUrl)
                 ? "/images/no-image-icon.png"
                 : dto.ImageUrl;
@@ -101,6 +117,4 @@ namespace SaleKiosk.Application.Services
             _uow.Commit();
         }
     }
-
-
 }

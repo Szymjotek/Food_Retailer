@@ -7,6 +7,7 @@ namespace SaleKiosk.Infrastructure.Repositories
     public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
         protected readonly DbContext _context;
+
         public Repository(DbContext context)
         {
             _context = context;
@@ -17,12 +18,12 @@ namespace SaleKiosk.Infrastructure.Repositories
             return _context.Set<TEntity>().Count();
         }
 
-        public TEntity Get(int id)
+        public virtual TEntity Get(int id)
         {
             return _context.Set<TEntity>().Find(id);
         }
 
-        public IList<TEntity> GetAll()
+        public virtual IList<TEntity> GetAll()
         {
             return _context.Set<TEntity>()
                 .AsNoTracking()

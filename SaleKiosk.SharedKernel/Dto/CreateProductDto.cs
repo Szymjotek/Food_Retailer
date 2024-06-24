@@ -8,6 +8,7 @@ namespace SaleKiosk.SharedKernel.Dto
         public string Desc { get; set; }
         public decimal UnitPrice { get; set; }
         public string ImageUrl { get; set; }
+        public int SupplierId { get; set; }
     }
 
 

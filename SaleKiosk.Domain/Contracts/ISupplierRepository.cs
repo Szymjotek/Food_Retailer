@@ -8,5 +8,6 @@ namespace SaleKiosk.Domain.Contracts
     public interface ISupplierRepository : IRepository<Supplier>
     {
         int GetMaxId();
+        Supplier GetSupplierWithProducts(int supplierId);
     }
 }

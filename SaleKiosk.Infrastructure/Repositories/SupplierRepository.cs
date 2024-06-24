@@ -1,9 +1,10 @@
 ﻿using SaleKiosk.Domain.Contracts;
 using SaleKiosk.Domain.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace SaleKiosk.Infrastructure.Repositories
 {
-    // Implementacja repozytoriów specyficznych
     public class SupplierRepository : Repository<Supplier>, ISupplierRepository
     {
         private readonly KioskDbContext _kioskDbContext;
@@ -16,10 +17,29 @@ namespace SaleKiosk.Infrastructure.Repositories
 
         public int GetMaxId()
         {
-            return _kioskDbContext.Products.Max(x => x.Id);
+            return _kioskDbContext.Suppliers.Max(x => x.Id);
         }
 
-       
-    }
+        public override Supplier Get(int id)
+        {
+            return _kioskDbContext.Suppliers
+                                  .Include(s => s.Products)
+                                  .FirstOrDefault(s => s.Id == id);
+        }
 
+        public override IList<Supplier> GetAll()
+        {
+            return _kioskDbContext.Suppliers
+                                  .Include(s => s.Products)
+                                  .AsNoTracking()
+                                  .ToList();
+        }
+
+        public Supplier GetSupplierWithProducts(int id)
+        {
+            return _kioskDbContext.Suppliers
+                                  .Include(s => s.Products)
+                                  .FirstOrDefault(s => s.Id == id);
+        }
+    }
 }

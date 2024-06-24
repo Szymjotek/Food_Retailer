@@ -3,42 +3,47 @@
 @inject NavigationManager _navigationManager
 @inject IFileService _fileService
 
-<PageTitle>Edit product</PageTitle>
-<h1>Edit product</h1>
+<PageTitle>Edit Product</PageTitle>
+<h1 class="page-title">Edit Product</h1>
 
 <EditForm Model="@_product" OnValidSubmit="@UpdateProduct">
     <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="@true" />
     <ValidationSummary />
+
     <div class="form-group">
-        <label>Name: </label>
-        <InputText @bind-Value="@_product.Name" class="form-control" />
+        <label for="productName">Name:</label>
+        <InputText id="productName" @bind-Value="@_product.Name" class="form-control" />
         <ValidationMessage For="@(() => _product.Name)" />
-    </div>
-    <div class="form-group">
-        <label>Description: </label>
-        <InputText @bind-Value="@_product.Desc" class="form-control" />
-        <ValidationMessage For="@(() => _product.Desc)" />
-    </div>
-    <div class="form-group">
-        <label>Price: </label>
-        <InputNumber @bind-Value="@_product.UnitPrice" class="form-control" />
-        <ValidationMessage For="@(() => _product.UnitPrice)" />
-    </div>
-    <div class="form-group">
-        <label>Image: </label>
-        <InputFile OnChange="HandleImageUpload"></InputFile>
     </div>
 
     <div class="form-group">
-        <img src="@_product.ImageUrl" width="240">
+        <label for="productDescription">Description:</label>
+        <InputText id="productDescription" @bind-Value="@_product.Desc" class="form-control" />
+        <ValidationMessage For="@(() => _product.Desc)" />
     </div>
-    <br />
+
     <div class="form-group">
-        <button class="btn btn-primary" type="submit"> <span class="oi oi-pencil"></span> Update </button>
+        <label for="productPrice">Price:</label>
+        <InputNumber id="productPrice" @bind-Value="@_product.UnitPrice" class="form-control" />
+        <ValidationMessage For="@(() => _product.UnitPrice)" />
+    </div>
+
+    <div class="form-group">
+        <label for="productImage">Image:</label>
+        <InputFile id="productImage" OnChange="HandleImageUpload" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <img src="@_product.ImageUrl" width="240" alt="Product Image" class="product-image" />
+    </div>
+
+    <div class="button-group">
+        <button class="btn btn-primary" type="submit">
+            <span class="oi oi-pencil"></span> Update
+        </button>
         <button @onclick="BackToList" class="btn btn-secondary" type="button">
-            <span class="oi oi-media-skip-backward"></span> 
-             Back To List 
-         </button>
+            <span class="oi oi-media-skip-backward"></span> Back To List
+        </button>
     </div>
 </EditForm>
 
@@ -48,21 +53,31 @@
 
     private FluentValidationValidator? _fluentValidationValidator;
 
-    private UpdateProductDto _product = null;
-    private string _oldImageUrl = null;
+    private UpdateProductDto _product = new();
+    private string _oldImageUrl = string.Empty;
 
     protected override void OnInitialized()
     {
-        base.OnInitialized();
         var p = _productService.GetById(Id);
-        _product = new UpdateProductDto() { Id = p.Id, Name = p.Name, Desc = p.Description, UnitPrice = p.UnitPrice, ImageUrl = p.ImageUrl };
-        _oldImageUrl = _product.ImageUrl;
+        if (p != null)
+        {
+            _product = new UpdateProductDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Desc = p.Description,
+                    UnitPrice = p.UnitPrice,
+                    ImageUrl = p.ImageUrl
+                };
+            _oldImageUrl = _product.ImageUrl;
+        }
     }
 
     private void UpdateProduct()
     {
-        if ((_oldImageUrl != "/images/no-image-icon.png") 
-            && (_oldImageUrl != _product.ImageUrl))
+        if (!string.IsNullOrEmpty(_oldImageUrl)
+            && _oldImageUrl != "/images/no-image-icon.png"
+            && _oldImageUrl != _product.ImageUrl)
         {
             _fileService.DeleteFile(_oldImageUrl);
         }
@@ -78,26 +93,82 @@
 
     private async Task HandleImageUpload(InputFileChangeEventArgs e)
     {
-        if (e.GetMultipleFiles().Count > 0)
+        foreach (var file in e.GetMultipleFiles())
         {
-            foreach (var file in e.GetMultipleFiles())
+            var fileInfo = new System.IO.FileInfo(file.Name);
+            if (fileInfo.Extension.ToLower() is ".jpg" or ".png" or ".jpeg")
             {
-                System.IO.FileInfo fileInfo = new System.IO.FileInfo(file.Name);
-                if (fileInfo.Extension.ToLower() == ".jpg" ||
-                    fileInfo.Extension.ToLower() == ".png" ||
-                    fileInfo.Extension.ToLower() == ".jpeg")
-                {
-                    _product.ImageUrl = await _fileService.UploadFile(file);
-                }
-                else
-                {
-                    //await _jsRuntime.ToastrError("Please select .jpg/.jpeg/.png file only");
-                    return;
-                }
+                _product.ImageUrl = await _fileService.UploadFile(file);
+            }
+            else
+            {
+                // Display error message if needed
+                return;
             }
         }
     }
 }
+
+<style>
+    .page-title {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        font-size: 1em;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    .product-image {
+        display: block;
+        margin: 20px auto;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 1em;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: #1a73e8;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: #155cb0;
+        }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+</style>
+
 
 @*@page "/product/edit/{id:int}"
 @inject IProductService _productService

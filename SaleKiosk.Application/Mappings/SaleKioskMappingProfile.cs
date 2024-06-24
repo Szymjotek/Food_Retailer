@@ -15,7 +15,8 @@ namespace SaleKiosk.Application.Mappings
         {
             CreateMap<Product, ProductDto>();
             CreateMap<CreateProductDto, Product>()
-                .ForMember(m => m.Description, c => c.MapFrom(s => s.Desc));
+                .ForMember(m => m.Description, c => c.MapFrom(s => s.Desc))
+                .ForMember(m => m.SupplierId, c => c.MapFrom(s => s.SupplierId));
 
             CreateMap<Customer, CustomerDto>();
             CreateMap<CreateCustomerDto, Customer>()

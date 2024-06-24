@@ -8,6 +8,11 @@
         public decimal UnitPrice { get; set; }
         public DateTime CreatedAt { get; set; }
         public string ImageUrl { get; set; } = "/images/no-image-icon.png";
+
+        // Foreign key
+        public int SupplierId { get; set; }
+        // Navigation property
+        public Supplier Supplier { get; set; }
     }
 
 

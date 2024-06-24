@@ -10,12 +10,12 @@ namespace SaleKiosk.Application.Validators
             RuleFor(p => p.CustomerName)
                 .NotEmpty()
                 .MinimumLength(2)
-                .MaximumLength(20);
+                .MaximumLength(30);
 
             RuleFor(p => p.Address)
                 .NotEmpty()
                 .MinimumLength(2)
-                .MaximumLength(20);
+                .MaximumLength(50);
 
             RuleFor(p => p.PhoneNumber)
                 .NotEmpty()

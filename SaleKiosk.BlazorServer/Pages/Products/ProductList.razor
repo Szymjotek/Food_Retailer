@@ -3,66 +3,90 @@
 @inject NavigationManager _navigationManager
 @inject IJSRuntime _js
 
-<PageTitle>Product list</PageTitle>
+<PageTitle>Product List</PageTitle>
 
-<RadzenButton Text="aqq"></RadzenButton>
-
-<h1>Product list</h1>
-<br/>
-<div>
-    <div>
-        <a href="product/create" class="btn bg-primary"><span class="oi oi-plus" aria-hidden="true"></span> Create new product </a>
-    </div>
-    <br />
-    <div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Price</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var p in _productList)
-                {
-                    <tr>
-                        <td>
-                            <img src="@p.ImageUrl" width="64">
-                        </td>
-                        <td>@p.Name</td>
-                        <td>@p.Description</td>
-                        <td>@p.UnitPrice</td>
-                        <td>
-                            <button class="btn bg-warning" @onclick="@(()=>UpdateProduct(@p.Id))"><span class="oi oi-pencil" aria-hidden="true"></span> Edit </button>
-                            <button class="btn bg-danger" @onclick="@(()=>DeleteProduct(@p.Id))"><span class="oi oi-delete" aria-hidden="true"></span> Delete </button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+<h1 class="page-title">Product List</h1>
+<div class="button-container">
+    <a href="product/create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Create New Product
+    </a>
 </div>
+<br />
+
+<RadzenDataGrid Data="@_filteredAndSortedProducts" TItem="ProductDto" AllowFiltering="true" AllowSorting="true" AllowPaging="true" PageSize="10" FilterMode="FilterMode.Advanced" LogicalFilterOperator="LogicalFilterOperator.And">
+    <Columns>
+        <RadzenDataGridColumn TItem="ProductDto" Property="ImageUrl" Title="Image" Width="100px" Filterable="false" Sortable="false">
+            <Template Context="data">
+                <img src="@data.ImageUrl" width="64" alt="Product Image" class="product-image" />
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="ProductDto" Property="Name" Title="Name" Width="200px" />
+        <RadzenDataGridColumn TItem="ProductDto" Property="Description" Title="Description" Width="300px" />
+        <RadzenDataGridColumn TItem="ProductDto" Property="UnitPrice" Title="Price" Width="100px" />
+        <RadzenDataGridColumn TItem="ProductDto" Title="Action" Width="300px" Filterable="false" Sortable="false">
+            <Template Context="data">
+                <div class="action-buttons">
+                    <button class="btn btn-warning action-btn m-1" @onclick="@(() => UpdateProduct(data.Id))">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-danger action-btn m-1" @onclick="@(() => DeleteProduct(data.Id))">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
 
 @code {
-    private List<ProductDto> _productList = null;
+    private List<ProductDto> _productList = new();
+    private string filterQuery = string.Empty;
+    private string sortOption = "Name";
+    private string sortOrder = "asc";
+    private List<ProductDto> _filteredAndSortedProducts => FilterAndSortProducts();
 
     protected override void OnInitialized()
     {
-        base.OnInitialized();
         _productList = _productService.GetAll();
+    }
+
+    private List<ProductDto> FilterAndSortProducts()
+    {
+        var filteredList = string.IsNullOrEmpty(filterQuery)
+            ? _productList
+            : _productList.Where(p => p.Name.Contains(filterQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        filteredList = sortOption switch
+        {
+            "Name" => sortOrder == "asc" ? filteredList.OrderBy(p => p.Name).ToList() : filteredList.OrderByDescending(p => p.Name).ToList(),
+            "Price" => sortOrder == "asc" ? filteredList.OrderBy(p => p.UnitPrice).ToList() : filteredList.OrderByDescending(p => p.UnitPrice).ToList(),
+            _ => filteredList
+        };
+
+        return filteredList;
+    }
+
+    private void ApplyFilterAndSort()
+    {
+        StateHasChanged(); // Trigger re-render to apply filter and sort
+    }
+
+    private void ResetFilterAndSort()
+    {
+        filterQuery = string.Empty;
+        sortOption = "Name";
+        sortOrder = "asc";
+        StateHasChanged(); // Trigger re-render to reset filter and sort
     }
 
     protected async Task DeleteProduct(int id)
     {
         var product = _productList.First(q => q.Id == id);
-        var confirm = await _js.InvokeAsync<bool>("confirm", $"Are You Sure You Want To Delete {product.Name}?");
+        var confirm = await _js.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {product.Name}?");
         if (confirm)
         {
             _productService.Delete(id);
-            OnInitialized();
+            _productList = _productService.GetAll(); // Refresh the list after deletion
         }
     }
 
@@ -71,6 +95,121 @@
         _navigationManager.NavigateTo($"product/edit/{id}");
     }
 }
+
+<style>
+    .page-title {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 2em;
+        font-weight: bold;
+    }
+
+    .button-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 1em;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-right: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .btn-primary {
+        background-color: #1a73e8;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: #155cb0;
+        }
+
+    .btn-warning {
+        background-color: #f0ad4e;
+        color: white;
+    }
+
+        .btn-warning:hover {
+            background-color: #ec971f;
+        }
+
+    .btn-danger {
+        background-color: #d9534f;
+        color: white;
+    }
+
+        .btn-danger:hover {
+            background-color: #c9302c;
+        }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .m-1 {
+        margin: 5px;
+    }
+
+    .action-btn {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+
+    /* Custom styles for Radzen DataGrid headers */
+    .radzen-data-table .rz-column-header-content {
+        background-color: #4caf50 !important;
+        color: white !important;
+        font-weight: bold !important;
+        text-transform: uppercase !important;
+        font-size: 1.1em !important;
+        text-align: center !important;
+        border-bottom: 2px solid #333 !important;
+        padding: 10px !important;
+    }
+
+    .radzen-data-table .rz-datatable-header {
+        text-align: center !important;
+    }
+
+    .radzen-data-table .rz-cell {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .radzen-data-table .rz-paginator {
+        justify-content: center;
+    }
+
+    .radzen-data-table .rz-datatable-tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .product-image {
+        display: block;
+        margin: auto;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+
+
+
+
+
+
 
 
 

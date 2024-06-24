@@ -1,13 +1,12 @@
-﻿
-
-using SaleKiosk.Domain.Models;
+﻿using SaleKiosk.Domain.Models;
+using System.Collections.Generic;
 
 namespace SaleKiosk.Domain.Contracts
 {
-    // interfejsy repozytoriów specyficznych
     public interface IProductRepository : IRepository<Product>
     {
         int GetMaxId();
-        bool IsInUse(string email);
+        bool IsInUse(string name);
+        IList<Product> GetProductsBySupplierId(int supplierId); 
     }
 }

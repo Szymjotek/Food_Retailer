@@ -39,7 +39,7 @@ try
 
     // rejestracja kontekstu bazy w kontenerze IoC
     // var sqliteConnectionString = "Data Source=Kiosk.WebAPI.Logger.db";
-    var sqliteConnectionString = @"Data Source=C:\Users\szymo\Downloads\Projekt\SaleKiosk_Order_CompletedSaleKioskStudent.db";
+    var sqliteConnectionString = @"Data Source=C:\Users\WojciechMolenda\source\repos\Food_Retailer\Food_Retailer.db";
     builder.Services.AddDbContext<KioskDbContext>(options =>
         options.UseSqlite(sqliteConnectionString));
 
