@@ -1,5 +1,6 @@
 ﻿@page "/product/edit/{id:int}"
 @inject IProductService _productService
+@inject ISupplierService _supplierService
 @inject NavigationManager _navigationManager
 @inject IFileService _fileService
 
@@ -29,6 +30,18 @@
     </div>
 
     <div class="form-group">
+        <label for="productSupplier">Supplier:</label>
+        <InputSelect id="productSupplier" @bind-Value="@_product.SupplierId" class="form-control">
+            @foreach (var supplier in _suppliers)
+            {
+                <option value="@supplier.Id">@supplier.SupplierName</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="@(() => _product.SupplierId)" />
+    </div>
+
+
+    <div class="form-group">
         <label for="productImage">Image:</label>
         <InputFile id="productImage" OnChange="HandleImageUpload" class="form-control" />
     </div>
@@ -54,10 +67,14 @@
     private FluentValidationValidator? _fluentValidationValidator;
 
     private UpdateProductDto _product = new();
+    private List<SupplierDto> _suppliers = new();
     private string _oldImageUrl = string.Empty;
 
-    protected override void OnInitialized()
+
+    protected override async Task OnInitializedAsync()  
     {
+        _suppliers = await _supplierService.GetAllAsync();
+
         var p = _productService.GetById(Id);
         if (p != null)
         {
@@ -67,7 +84,8 @@
                     Name = p.Name,
                     Desc = p.Description,
                     UnitPrice = p.UnitPrice,
-                    ImageUrl = p.ImageUrl
+                    ImageUrl = p.ImageUrl,
+                    SupplierId = p.SupplierId  
                 };
             _oldImageUrl = _product.ImageUrl;
         }

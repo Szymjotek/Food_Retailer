@@ -1,52 +1,73 @@
 ﻿@page "/product/create"
 @inject IProductService _productService
+@inject ISupplierService _supplierService 
 @inject NavigationManager _navigationManager
 @inject IFileService _fileService
 
-<PageTitle>Create new product</PageTitle>
-<h1>Create new product</h1>
+<PageTitle>Create New Product</PageTitle>
+<h1 class="page-title">Create New Product</h1>
 
 <EditForm Model="@_product" OnValidSubmit="@CreateProduct">
     <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="@true" />
     <ValidationSummary />
+
     <div class="form-group">
-        <label>Name: </label>
-        <InputText @bind-Value="@_product.Name" class="form-control" />
+        <label for="productName">Name:</label>
+        <InputText id="productName" @bind-Value="@_product.Name" class="form-control" />
         <ValidationMessage For="@(() => _product.Name)" />
     </div>
+
     <div class="form-group">
-        <label>Description: </label>
-        <InputText @bind-Value="@_product.Desc" class="form-control" />
+        <label for="productDescription">Description:</label>
+        <InputText id="productDescription" @bind-Value="@_product.Desc" class="form-control" />
         <ValidationMessage For="@(() => _product.Desc)" />
     </div>
+
     <div class="form-group">
-        <label>Price: </label>
-        <InputNumber @bind-Value="@_product.UnitPrice" class="form-control" />
+        <label for="productPrice">Price:</label>
+        <InputNumber id="productPrice" @bind-Value="@_product.UnitPrice" class="form-control" />
         <ValidationMessage For="@(() => _product.UnitPrice)" />
     </div>
+
     <div class="form-group">
-        <label>Image: </label>
-        <InputFile OnChange="HandleImageUpload"></InputFile>
+        <label for="productImage">Image:</label>
+        <InputFile id="productImage" OnChange="HandleImageUpload" class="form-control" />
     </div>
+
     <div class="form-group">
-        <img src="@_product.ImageUrl" width="240">
+        <label for="productSupplier">Supplier:</label>
+        <InputSelect id="productSupplier" @bind-Value="@_product.SupplierId" class="form-control">
+            @foreach (var supplier in _suppliers)
+            {
+                <option value="@supplier.Id">@supplier.SupplierName</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="@(() => _product.SupplierId)" />
     </div>
-    <br />
-    <div class="form-group">
+
+    <div class="form-group image-preview">
+        <img src="@_product.ImageUrl" width="240" alt="Product Image" class="product-image" />
+    </div>
+
+    <div class="button-group">
         <button class="btn btn-primary" type="submit">
-            <span class="oi oi-pencil"></span>
-            Create
+            <span class="oi oi-pencil"></span> Create
         </button>
         <button @onclick="BackToList" class="btn btn-secondary" type="button">
-            <span class="oi oi-media-skip-backward"></span>
-            Back To List
+            <span class="oi oi-media-skip-backward"></span> Back To List
         </button>
     </div>
 </EditForm>
 
 @code {
     private CreateProductDto _product = new();
+    private List<SupplierDto> _suppliers = new();  
     private FluentValidationValidator? _fluentValidationValidator;
+
+    protected override async Task OnInitializedAsync() 
+    {
+        _suppliers = await _supplierService.GetAllAsync();
+    }
 
     private void CreateProduct()
     {
@@ -61,26 +82,89 @@
 
     private async Task HandleImageUpload(InputFileChangeEventArgs e)
     {
-        if (e.GetMultipleFiles().Count > 0)
+        foreach (var file in e.GetMultipleFiles())
         {
-            foreach (var file in e.GetMultipleFiles())
+            var fileInfo = new System.IO.FileInfo(file.Name);
+            if (fileInfo.Extension.ToLower() is ".jpg" or ".png" or ".jpeg")
             {
-                System.IO.FileInfo fileInfo = new System.IO.FileInfo(file.Name);
-                if (fileInfo.Extension.ToLower() == ".jpg" ||
-                    fileInfo.Extension.ToLower() == ".png" ||
-                    fileInfo.Extension.ToLower() == ".jpeg")
-                {
-                    _product.ImageUrl = await _fileService.UploadFile(file);
-                }
-                else
-                {
-                    //await _jsRuntime.ToastrError("Please select .jpg/.jpeg/.png file only");
-                    return;
-                }
+                _product.ImageUrl = await _fileService.UploadFile(file);
+            }
+            else
+            {
+                // Display error message if needed
+                return;
             }
         }
     }
 }
+
+<style>
+    .page-title {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        font-size: 1em;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    .image-preview {
+        text-align: center;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .product-image {
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 1em;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-right: 5px;
+    }
+
+    .btn-primary {
+        background-color: #1a73e8;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: #155cb0;
+        }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+</style>
+
+
 
 
 @*@page "/product/create"

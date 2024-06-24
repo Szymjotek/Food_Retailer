@@ -9,5 +9,6 @@ namespace SaleKiosk.Domain.Contracts
     {
         int GetMaxId();
         Supplier GetSupplierWithProducts(int supplierId);
+        Task<List<Supplier>> GetAllAsync();
     }
 }

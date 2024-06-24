@@ -23,6 +23,7 @@
         <RadzenDataGridColumn TItem="ProductDto" Property="Name" Title="Name" Width="200px" />
         <RadzenDataGridColumn TItem="ProductDto" Property="Description" Title="Description" Width="300px" />
         <RadzenDataGridColumn TItem="ProductDto" Property="UnitPrice" Title="Price" Width="100px" />
+        <RadzenDataGridColumn TItem="ProductDto" Property="SupplierName" Title="Supplier" Width="200px" /> 
         <RadzenDataGridColumn TItem="ProductDto" Title="Action" Width="300px" Filterable="false" Sortable="false">
             <Template Context="data">
                 <div class="action-buttons">
@@ -45,7 +46,7 @@
     private string sortOrder = "asc";
     private List<ProductDto> _filteredAndSortedProducts => FilterAndSortProducts();
 
-    protected override void OnInitialized()
+    protected override void OnInitialized()  
     {
         _productList = _productService.GetAll();
     }
@@ -54,12 +55,14 @@
     {
         var filteredList = string.IsNullOrEmpty(filterQuery)
             ? _productList
-            : _productList.Where(p => p.Name.Contains(filterQuery, StringComparison.OrdinalIgnoreCase)).ToList();
+            : _productList.Where(p => p.Name.Contains(filterQuery, StringComparison.OrdinalIgnoreCase)
+                                   || p.SupplierName.Contains(filterQuery, StringComparison.OrdinalIgnoreCase)).ToList();
 
         filteredList = sortOption switch
         {
             "Name" => sortOrder == "asc" ? filteredList.OrderBy(p => p.Name).ToList() : filteredList.OrderByDescending(p => p.Name).ToList(),
             "Price" => sortOrder == "asc" ? filteredList.OrderBy(p => p.UnitPrice).ToList() : filteredList.OrderByDescending(p => p.UnitPrice).ToList(),
+            "SupplierName" => sortOrder == "asc" ? filteredList.OrderBy(p => p.SupplierName).ToList() : filteredList.OrderByDescending(p => p.SupplierName).ToList(),  // Add this case
             _ => filteredList
         };
 
@@ -79,13 +82,13 @@
         StateHasChanged(); // Trigger re-render to reset filter and sort
     }
 
-    protected async Task DeleteProduct(int id)
+    protected void DeleteProduct(int id)
     {
         var product = _productList.First(q => q.Id == id);
-        var confirm = await _js.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {product.Name}?");
-        if (confirm)
+        var confirm = _js.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {product.Name}?");
+        if (confirm.Result)
         {
-            _productService.Delete(id);
+            _productService.Delete(id);  // Synchronous call
             _productList = _productService.GetAll(); // Refresh the list after deletion
         }
     }
@@ -203,6 +206,8 @@
 </style>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+
 
 
 

@@ -41,5 +41,10 @@ namespace SaleKiosk.Infrastructure.Repositories
                                   .Include(s => s.Products)
                                   .FirstOrDefault(s => s.Id == id);
         }
+
+        public async Task<List<Supplier>> GetAllAsync()
+        {
+            return await _kioskDbContext.Suppliers.ToListAsync();
+        }
     }
 }

@@ -54,6 +54,12 @@ namespace SaleKiosk.Application.Services
             return result;
         }
 
+        public async Task<List<SupplierDto>> GetAllAsync()
+        {
+            var suppliers = await _uow.SupplierRepository.GetAllAsync();
+            return _mapper.Map<List<SupplierDto>>(suppliers);
+        }
+
         public SupplierDto GetById(int id)
         {
             if (id <= 0)

@@ -63,11 +63,20 @@ namespace SaleKiosk.Application.Services
         {
             var products = _uow.ProductRepository.GetAll();
 
-            List<ProductDto> result = _mapper.Map<List<ProductDto>>(products);
-            return result;
-        }
+            var productDtos = products.Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                UnitPrice = p.UnitPrice,
+                ImageUrl = p.ImageUrl,
+                SupplierId = p.SupplierId,
+                SupplierName = p.Supplier.SupplierName  
+            }).ToList();
 
-        public ProductDto GetById(int id)
+            return productDtos;
+        }
+            public ProductDto GetById(int id)
         {
             if (id <= 0)
             {
