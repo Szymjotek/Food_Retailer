@@ -7,7 +7,7 @@ namespace SaleKiosk.BlazorClient.Services
 {
     public interface IOrderService
     {
-        Task SubmitOrder(List<CartItem> cart, string orderMessage);
+        Task SubmitOrder(List<CartItem> cart, string orderMessage, int CustomerId);
     }
 
     public class OrderService : IOrderService
@@ -19,13 +19,14 @@ namespace SaleKiosk.BlazorClient.Services
             this._httpClient = httpClient;
         }
 
-        public async Task SubmitOrder(List<CartItem> cart, string orderMessage)
+        public async Task SubmitOrder(List<CartItem> cart, string orderMessage, int customerId)
         {
             OrderDto createOrderDto = new OrderDto()
             {
                 CreatedAt = DateTime.Now,
                 Status = OrderStatusEnumDto.Submitted,
                 OrderMessage = orderMessage,
+                CustomerId = customerId,
                 Details = new List<OrderDetailDto>()
             };
             foreach (var item in cart)

@@ -34,13 +34,13 @@ namespace SaleKiosk.Infrastructure
                 var customers = new List<Customer>
                 {
                     new Customer
-                    {   Id = 1,
+                    {   CustomerId = 1,
                         CustomerName = "John Doe",
                         PhoneNumber = "123456789",
                         Address = "123 Main St"
                     },
                     new Customer
-                    {   Id = 2,
+                    {   CustomerId = 2,
                         CustomerName = "Jane Smith",
                         PhoneNumber = "987654321",
                         Address = "456 Elm St"

@@ -16,7 +16,7 @@ namespace SaleKiosk.Infrastructure.Repositories
 
         public int GetMaxId()
         {
-            return _kioskDbContext.Customers.Max(x => x.Id);
+            return _kioskDbContext.Customers.Max(x => x.CustomerId);
         }
 
     }

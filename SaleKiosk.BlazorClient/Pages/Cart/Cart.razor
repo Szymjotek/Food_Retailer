@@ -66,12 +66,18 @@
     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Szczegoly zamowienia</RadzenText>
     <RadzenTextBox class="w-100" @bind-Value="@OrderMessage"  Placeholder="Podaj detale zamowienia" />
 </RadzenCard>
+
+    <RadzenCard>
+        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Szczegoly zamowienia</RadzenText>
+        <RadzenNumeric class="w-100" @bind-Value="@CustomerId" Placeholder="Podaj detale zamowienia" />
+    </RadzenCard>
 </div>
 
 @code {
     private List<CartItem> _cart = new List<CartItem>();
     private decimal _total = 0;
     public string OrderMessage { get; set; } = string.Empty;
+    public int CustomerId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -134,7 +140,7 @@
 
     private async Task SubmitOrder()
     {
-        await _orderService.SubmitOrder(_cart,OrderMessage);
+        await _orderService.SubmitOrder(_cart, OrderMessage, CustomerId);
         await _cartService.DeleteCart();
 
         var notificationMessage = new NotificationMessage

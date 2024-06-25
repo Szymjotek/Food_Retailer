@@ -4,22 +4,20 @@
 @inject NotificationService _notificationService
 
 <PageTitle>Product list</PageTitle>
-<RadzenButton Text="text"></RadzenButton>
-
 <h3>Product list</h3>
 
 <div class="row">
     @foreach (var p in _productList)
     {
         <div class="card m-2" style="width: 18rem;">
-        <EditForm Model="@p" onclick="@(() => AddToShoppingCart(@p))">
+        <EditForm Model="@p" >
             <img class="card-img-top" src=@p.ImageUrl alt="Card image cap">
             <div class="card-body">
                 <h5 class="card-title">@p.Name</h5>
                 <p class="card-text">@p.Description</p>
                 <p class="card-text">@p.UnitPrice.ToString("c")</p>
                 <p> <InputNumber @bind-Value="@Count"></InputNumber> </p>
-                <p> <button class="btn btn-primary" type="submit">Add to cart</button> </p>
+                <p> <button class="btn btn-primary" onclick="@(() => AddToShoppingCart(@p))" type="submit">Add to cart</button> </p>
             </div>
         </EditForm>
         </div>

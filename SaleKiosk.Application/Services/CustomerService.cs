@@ -21,12 +21,12 @@ namespace SaleKiosk.Application.Services
         {
             if (dto == null)
             {
-                throw new BadRequestException("Product is null");
+                throw new BadRequestException("Customer is null");
             }
 
             var id = _uow.CustomerRepository.GetMaxId() + 1;
             var customer = _mapper.Map<Customer>(dto);
-            customer.Id = id;
+            customer.CustomerId = id;
 
     
             _uow.CustomerRepository.Insert(customer);
@@ -40,7 +40,7 @@ namespace SaleKiosk.Application.Services
             var customer = _uow.CustomerRepository.Get(id);
             if (customer == null)
             {
-               throw new NotFoundException("Product not found");
+               throw new NotFoundException("Customer not found");
             }
 
             _uow.CustomerRepository.Delete(customer);
