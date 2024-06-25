@@ -21,42 +21,53 @@ namespace SaleKiosk.BlazorClient.Services
 
         public async Task SubmitOrder(List<CartItem> cart, string orderMessage, int customerId)
         {
-            OrderDto createOrderDto = new OrderDto()
+            try
             {
-                CreatedAt = DateTime.Now,
-                Status = OrderStatusEnumDto.Submitted,
-                OrderMessage = orderMessage,
-                CustomerId = customerId,
-                Details = new List<OrderDetailDto>()
-            };
-            foreach (var item in cart)
-            {
-                var orderDetailDto = new OrderDetailDto()
+                OrderDto createOrderDto = new OrderDto()
                 {
-                    ProductId = item.Product.Id,
-                    ProductName = item.Product.Name,
-                    ProductPrice = item.Product.UnitPrice,
-                    ImageUrl = item.Product.ImageUrl,
-                    Count = item.Count,
+                    CreatedAt = DateTime.Now,
+                    Status = OrderStatusEnumDto.Submitted,
+                    OrderMessage = orderMessage,
+                    CustomerId = customerId,
+                    Details = new List<OrderDetailDto>()
                 };
+                foreach (var item in cart)
+                {
+                    var orderDetailDto = new OrderDetailDto()
+                    {
+                        ProductId = item.Product.Id,
+                        ProductName = item.Product.Name,
+                        ProductPrice = item.Product.UnitPrice,
+                        ImageUrl = item.Product.ImageUrl,
+                        Count = item.Count,
+                    };
 
-                createOrderDto.Details.Add(orderDetailDto);
-                createOrderDto.OrderTotal += orderDetailDto.ProductPrice * orderDetailDto.Count;
+                    createOrderDto.Details.Add(orderDetailDto);
+                    createOrderDto.OrderTotal += orderDetailDto.ProductPrice * orderDetailDto.Count;
+                }
+
+
+                var content = JsonConvert.SerializeObject(createOrderDto);
+                var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
+                var response = await _httpClient.PostAsync("order", bodyContent);
+                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    throw new ApplicationException();
+
+                }
+                    response.EnsureSuccessStatusCode();
             }
-
-
-            var content = JsonConvert.SerializeObject(createOrderDto);
-            var bodyContent = new StringContent(content, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("order", bodyContent);
-            string responseResult = response.Content.ReadAsStringAsync().Result;
-            if (response.IsSuccessStatusCode)
+            catch (ApplicationException ex)
             {
-                return;
+
+                throw new ApplicationException("An error occurred while submitting the order. Is your Customer Id correct? If you want to register as a new customer, please contact our support.", ex);
             }
-            else
+            catch (HttpRequestException ex)
             {
-                throw new Exception(responseResult);
+                
+                throw new Exception("Failed to submit order. Check your internet connection.", ex);
             }
+           
         }
     }
 

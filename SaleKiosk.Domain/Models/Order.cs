@@ -22,5 +22,7 @@ namespace SaleKiosk.Domain.Models
         public OrderStatusEnum Status { get; set; }
         public string OrderMessage { get; set; } = string.Empty;
         public List<OrderDetail> Details { get; set; } = new List<OrderDetail>();
+
+        public virtual Customer Customer { get; set; }
     }
 }

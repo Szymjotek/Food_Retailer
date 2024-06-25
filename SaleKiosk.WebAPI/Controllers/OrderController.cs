@@ -28,11 +28,23 @@ namespace SaleKiosk.WebAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult Create([FromBody] OrderDto dto)
         {
-            var id = _orderService.Create(dto);
+            try
+            {
+                var id = _orderService.Create(dto);
 
-            var actionName = nameof(Get);
-            var routeValues = new { id };
-            return CreatedAtAction(actionName, routeValues, null);
+                var actionName = nameof(Get);
+                var routeValues = new { id };
+                return CreatedAtAction(actionName, routeValues, null);
+            }
+            catch(ApplicationException ex)
+            {
+                return StatusCode(400, $"Customer ID error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                // Handle all other exceptions
+                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+            }
         }
     }
 }

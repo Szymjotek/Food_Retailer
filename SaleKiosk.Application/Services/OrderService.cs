@@ -15,6 +15,7 @@ namespace SaleKiosk.Application.Services
         {
             this._uow = unitOfWork;
             this._mapper = mapper;
+       
         }
 
         public int Create(OrderDto dto)
@@ -23,10 +24,15 @@ namespace SaleKiosk.Application.Services
             {
                 throw new BadRequestException("Order is null");
             }
-
+            
             var id = _uow.OrderRepository.GetMaxId() + 1;
             var order = _mapper.Map<Order>(dto);
             order.Id = id;
+
+            if (dto.CustomerId > _uow.CustomerRepository.GetMaxId())
+            {
+                throw new ApplicationException("CustomerID doesn't exist");
+            }
 
             _uow.OrderRepository.Insert(order);
             _uow.Commit();

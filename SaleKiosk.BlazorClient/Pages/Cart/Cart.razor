@@ -63,13 +63,13 @@
 </table>
 <div class="container-fluid">
 <RadzenCard>
-    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Szczegoly zamowienia</RadzenText>
-    <RadzenTextBox class="w-100" @bind-Value="@OrderMessage"  Placeholder="Podaj detale zamowienia" />
+    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Order Details</RadzenText>
+    <RadzenTextBox class="w-100" @bind-Value="@OrderMessage"  Placeholder="Order Details" MaxLength="100" />
 </RadzenCard>
 
     <RadzenCard>
-        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Szczegoly zamowienia</RadzenText>
-        <RadzenNumeric class="w-100" @bind-Value="@CustomerId" Placeholder="Podaj detale zamowienia" />
+        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Enter your unique client id </RadzenText>
+        <RadzenNumeric class="w-100" @bind-Value="@CustomerId" Placeholder="Client ID" />
     </RadzenCard>
 </div>
 
@@ -140,8 +140,27 @@
 
     private async Task SubmitOrder()
     {
-        await _orderService.SubmitOrder(_cart, OrderMessage, CustomerId);
-        await _cartService.DeleteCart();
+
+        if (CustomerId <= 0)
+        {
+            ShowNotification("Error", "Please enter a valid Customer ID.", NotificationSeverity.Error);
+            return;
+        }
+        try
+        {
+            await _orderService.SubmitOrder(_cart, OrderMessage, CustomerId);
+            await _cartService.DeleteCart();
+        }
+        catch (ApplicationException ex)
+        {
+            ShowNotification("Error", ex.Message, NotificationSeverity.Error);
+            return;
+        }
+        catch (Exception ex)
+        {
+            ShowNotification("Error", $"An unexpected error occurred: {ex.Message}", NotificationSeverity.Error);
+        }
+
 
         var notificationMessage = new NotificationMessage
             {
@@ -156,5 +175,19 @@
         _notificationService.Notify(notificationMessage);
 
         _navigationManager.NavigateTo("/product");
+    }
+
+    private void ShowNotification(string summary, string detail, NotificationSeverity severity)
+    {
+        var notificationMessage = new NotificationMessage
+            {
+                Severity = severity,
+                Summary = summary,
+                Detail = detail,
+                Duration = 8000,
+                CloseOnClick = true
+            };
+
+        _notificationService.Notify(notificationMessage);
     }
 }
