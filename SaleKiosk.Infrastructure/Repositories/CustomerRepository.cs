@@ -6,9 +6,9 @@ namespace SaleKiosk.Infrastructure.Repositories
     // Implementacja repozytoriów specyficznych
     public class CustomerRepository : Repository<Customer>, ICustomerRepository
     {
-        private readonly KioskDbContext _kioskDbContext;
+        private readonly FoodWarehouseDbContext _kioskDbContext;
 
-        public CustomerRepository(KioskDbContext context)
+        public CustomerRepository(FoodWarehouseDbContext context)
             : base(context)
         {
             _kioskDbContext = context;

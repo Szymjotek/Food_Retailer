@@ -1,6 +1,6 @@
-﻿using SaleKiosk.Domain.Contracts;
+﻿using FoodWarehouse.Domain.Contracts;
 
-namespace SaleKiosk.Infrastructure
+namespace FoodWarehouse.Infrastructure
 {
     public class KioskUnitOfWork : IKioskUnitOfWork, IDisposable
     {

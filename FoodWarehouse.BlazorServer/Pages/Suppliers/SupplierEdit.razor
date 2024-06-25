@@ -1,0 +1,245 @@
+﻿@page "/supplier/edit/{id:int}"
+@inject ISupplierService _supplierService
+@inject NavigationManager _navigationManager
+@inject IFileService _fileService
+
+<PageTitle>Edit Supplier</PageTitle>
+<h1 class="page-title">Edit Supplier</h1>
+
+<EditForm Model="@_supplier" OnValidSubmit="@UpdateSupplier">
+    <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="@true" />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="supplierName">Name:</label>
+        <InputText id="supplierName" @bind-Value="@_supplier.SupplierName" class="form-control" />
+        <ValidationMessage For="@(() => _supplier.SupplierName)" />
+    </div>
+
+    <div class="form-group">
+        <label for="address">Address:</label>
+        <InputText id="address" @bind-Value="@_supplier.Address" class="form-control" />
+        <ValidationMessage For="@(() => _supplier.Address)" />
+    </div>
+
+    <div class="form-group">
+        <label for="phoneNumber">Phone Number:</label>
+        <InputText id="phoneNumber" @bind-Value="@_supplier.PhoneNumber" class="form-control" />
+        <ValidationMessage For="@(() => _supplier.PhoneNumber)" />
+    </div>
+
+    <div class="form-group button-group">
+        <button class="btn btn-primary" type="submit">
+            <span class="oi oi-pencil"></span> Update
+        </button>
+        <button @onclick="BackToList" class="btn btn-secondary" type="button">
+            <span class="oi oi-media-skip-backward"></span> Back To List
+        </button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private FluentValidationValidator? _fluentValidationValidator;
+
+    private UpdateSupplierDto _supplier = new();
+
+    protected override void OnInitialized()
+    {
+        var supplier = _supplierService.GetById(Id);
+        if (supplier != null)
+        {
+            _supplier = new UpdateSupplierDto
+                {
+                    Id = supplier.Id,
+                    SupplierName = supplier.SupplierName,
+                    Address = supplier.Address,
+                    PhoneNumber = supplier.PhoneNumber
+                };
+        }
+    }
+
+    private void UpdateSupplier()
+    {
+        _supplierService.Update(_supplier);
+        _navigationManager.NavigateTo("/supplier");
+    }
+
+    private void BackToList()
+    {
+        _navigationManager.NavigateTo("/supplier");
+    }
+}
+
+<style>
+    .page-title {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        font-size: 1em;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 1em;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: #1a73e8;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: #155cb0;
+        }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+    }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+</style>
+
+@*@page "/product/edit/{id:int}"
+@inject IProductService _productService
+@inject NavigationManager _navigationManager
+
+<PageTitle>Edit product</PageTitle>
+<h1>Edit product</h1>
+
+<EditForm Model="@_product" OnValidSubmit="@UpdateProduct">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label>Name: </label>
+        <InputText @bind-Value="@_product.Name" class="form-control" />
+        <ValidationMessage For="@(() => _product.Name)" />
+    </div>
+    <div class="form-group">
+        <label>Description: </label>
+        <InputText @bind-Value="@_product.Desc" class="form-control" />
+        <ValidationMessage For="@(() => _product.Desc)" />
+    </div>
+    <div class="form-group">
+        <label>Price: </label>
+        <InputNumber @bind-Value="@_product.UnitPrice" class="form-control" />
+        <ValidationMessage For="@(() => _product.UnitPrice)" />
+    </div>
+    <br />
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit"> <span class="oi oi-pencil"></span> Update </button>
+        <button @onclick="BackToList" class="btn btn-secondary" type="button">
+            <span class="oi oi-media-skip-backward"></span> 
+             Back To List 
+         </button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private UpdateProductDto _product = null;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        var p = _productService.GetById(Id);
+        _product = new UpdateProductDto() { Id = p.Id, Name = p.Name, Desc = p.Description, UnitPrice = p.UnitPrice };
+    }
+
+    private void UpdateProduct()
+    {
+        _productService.Update(_product);
+        _navigationManager.NavigateTo("/product");
+    }
+
+    private void BackToList()
+    {
+        _navigationManager.NavigateTo("/product");
+    }
+}
+
+*@@*@page "/product/edit/{id:int}"
+@inject IProductService _productService
+@inject NavigationManager _navigationManager
+
+<PageTitle>Edit product</PageTitle>
+<h1>Edit product</h1>
+
+<EditForm Model="@_product" OnSubmit="@UpdateProduct">
+    <div class="form-group">
+        <label>Name: </label>
+        <InputText @bind-Value="@_product.Name" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Description: </label>
+        <InputText @bind-Value="@_product.Desc" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Price: </label>
+        <InputNumber @bind-Value="@_product.UnitPrice" class="form-control" />
+    </div>
+    <br />
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit"> <span class="oi oi-pencil"></span> Update </button>
+        <button @onclick="BackToList" class="btn btn-secondary" type="button">
+            <span class="oi oi-media-skip-backward" /> 
+             Back To List 
+        </button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private UpdateProductDto _product = null;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        var p = _productService.GetById(Id);
+        _product = new UpdateProductDto() { Id = p.Id, Name = p.Name, Desc = p.Description, UnitPrice = p.UnitPrice };
+    }
+
+    private void UpdateProduct()
+    {
+        _productService.Update(_product);
+        _navigationManager.NavigateTo("/product");
+    }
+
+    private void BackToList()
+    {
+        _navigationManager.NavigateTo("/product");
+    }
+}*@
+
+
+

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SaleKiosk.Domain.Models;
+using FoodWarehouse.Domain.Models;
 
-namespace SaleKiosk.Infrastructure
+namespace FoodWarehouse.Infrastructure
 {
     public class KioskDbContext : DbContext
     {

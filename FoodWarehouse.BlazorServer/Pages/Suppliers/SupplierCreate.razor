@@ -1,0 +1,221 @@
+﻿@page "/supplier/create"
+@using FoodWarehouse.Application.Services;
+@inject ISupplierService _supplierService
+@inject NavigationManager _navigationManager
+@inject IFileService _fileService
+
+<PageTitle>Create new supplier</PageTitle>
+<h1>Create new supplier</h1>
+
+<EditForm Model="@_supplier" OnValidSubmit="@CreateSupplier">
+    <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="@true" />
+    <ValidationSummary />
+    <div class="form-group">
+        <label>Name: </label>
+        <InputText @bind-Value="@_supplier.SupplierName" class="form-control" />
+        <ValidationMessage For="@(() => _supplier.SupplierName)" />
+    </div>
+    <div class="form-group">
+        <label>Address: </label>
+        <InputText @bind-Value="@_supplier.Address" class="form-control" />
+        <ValidationMessage For="@(() => _supplier.Address)" />
+    </div>
+    <div class="form-group">
+        <label>PhoneNumber: </label>
+        <InputText @bind-Value="@_supplier.PhoneNumber" class="form-control" />
+        <ValidationMessage For="@(() => _supplier.PhoneNumber)" />
+    </div>
+ 
+ 
+    <br />
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">
+            <span class="oi oi-pencil"></span>
+            Create
+        </button>
+        <button @onclick="BackToList" class="btn btn-secondary" type="button">
+            <span class="oi oi-media-skip-backward"></span>
+            Back To List
+        </button>
+    </div>
+</EditForm>
+
+@code {
+    private CreateSupplierDto _supplier = new();
+    private FluentValidationValidator? _fluentValidationValidator;
+
+    private void CreateSupplier()
+    {
+        _supplierService.Create(_supplier);
+        _navigationManager.NavigateTo("/supplier");
+    }
+
+    private void BackToList()
+    {
+        _navigationManager.NavigateTo("/supplier");
+    }
+    
+}
+
+
+@*@page "/product/create"
+@inject IProductService _productService
+@inject NavigationManager _navigationManager
+
+<PageTitle>Create new product</PageTitle>
+<h1>Create new product</h1>
+
+<EditForm Model="@_product" OnValidSubmit="@CreateProduct">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group">
+        <label>Name: </label>
+        <InputText @bind-Value="@_product.Name" class="form-control" />
+        <ValidationMessage For="@(() => _product.Name)" />
+    </div>
+    <div class="form-group">
+        <label>Description: </label>
+        <InputText @bind-Value="@_product.Desc" class="form-control" />
+        <ValidationMessage For="@(() => _product.Desc)" />
+    </div>
+    <div class="form-group">
+        <label>Price: </label>
+        <InputNumber @bind-Value="@_product.UnitPrice" class="form-control" />
+        <ValidationMessage For="@(() => _product.UnitPrice)" />
+    </div>
+    <br />
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">
+            <span class="oi oi-pencil"></span>
+            Create product
+        </button>
+        <button @onclick="BackToList" class="btn btn-secondary" type="button">
+            <span class="oi oi-media-skip-backward"></span>
+            Back To List
+        </button>
+    </div>
+</EditForm>
+
+@code {
+    private CreateProductDto _product = new();
+    
+    private void CreateProduct()
+    {
+        _productService.Create(_product);
+        _navigationManager.NavigateTo("/product");
+    }
+
+    private void BackToList()
+    {
+        _navigationManager.NavigateTo("/product");
+    }
+}
+*@
+
+
+@*@page "/product/create"
+@inject IProductService _productService
+@inject NavigationManager _navigationManager
+
+
+<PageTitle>Create new product</PageTitle>
+<h1>Create new product</h1>
+
+<EditForm Model="@_product" OnSubmit="@CreateProduct">
+    <div class="form-group">
+        <label>Name: </label>
+        <InputText @bind-Value="@_product.Name" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Description: </label>
+        <InputText @bind-Value="@_product.Desc" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Price: </label>
+        <InputNumber @bind-Value="@_product.UnitPrice" class="form-control" />
+    </div>
+    <br/>
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">
+            <span class="oi oi-pencil"></span>
+            Create product
+        </button>
+        <button @onclick="BackToList" class="btn btn-secondary" type="button">
+            <span class="oi oi-media-skip-backward"></span>
+            Back To List
+        </button>
+    </div>
+</EditForm>
+
+@code {
+    private CreateProductDto _product = new();
+
+    protected void CreateProduct()
+    {
+        _productService.Create(_product);
+        _navigationManager.NavigateTo("/product");
+    }
+
+    protected void BackToList()
+    {
+        _navigationManager.NavigateTo("/product");
+    }
+}
+*@
+
+
+@*@page "/product/create"
+@inject IProductService _productService
+@inject NavigationManager _navigationManager
+
+
+<PageTitle>Create new product</PageTitle>
+<h1>Create new product</h1>
+
+<EditForm Model="@Product" OnValidSubmit="@CreateProduct">
+    <FluentValidationValidator @ref="_fluentValidationValidator" DisableAssemblyScanning="@true" />
+    <ValidationSummary />
+    <div class="form-group">
+        <label>Name: </label>
+        <InputText @bind-Value="@Product.Name" class="form-control" />
+        <ValidationMessage For="@(() => Product.Name)" />
+    </div>
+    <div class="form-group">
+        <label>Description: </label>
+        <InputText @bind-Value="@Product.Desc" class="form-control" />
+        <ValidationMessage For="@(() => Product.Desc)" />
+    </div>
+    <div class="form-group">
+        <label>Price: </label>
+        <InputNumber @bind-Value="@Product.UnitPrice" class="form-control" />
+        <ValidationMessage For="@(() => Product.UnitPrice)" />
+    </div>
+    <br />
+    <div class="form-group">
+        <button class="btn btn-primary" type="submit">
+            <span class="oi oi-pencil"></span>
+            Create product
+        </button>
+        <button @onclick="BackToList" class="btn btn-secondary" type="button">
+            <span class="oi oi-media-skip-backward"></span>
+            Back To List
+        </button>
+    </div>
+
+</EditForm>
+
+@code {
+    public CreateProductDto Product = new();
+    private FluentValidationValidator? _fluentValidationValidator;
+
+    protected void CreateProduct()
+    {
+        _productService.Create(Product);
+        _navigationManager.NavigateTo("/product");
+    }
+
+    protected void BackToList()
+    {
+        _navigationManager.NavigateTo("/product");
+    }
+}*@

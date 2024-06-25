@@ -31,12 +31,12 @@ try
     builder.Services.AddSingleton<WeatherForecastService>();
 
     // rejestracja automappera w kontenerze IoC
-    builder.Services.AddAutoMapper(typeof(KioskMappingProfile));
+    builder.Services.AddAutoMapper(typeof(FoodWarehouseMappingProfile));
 
     // rejestracja kontekstu bazy w kontenerze IoC
     // var sqliteConnectionString = "Data Source=Kiosk.WebAPI.Logger.db";
-    var sqliteConnectionString = @"Data Source=C:\Users\szymo\source\repos\Food_Retailer_2\Food_Retailer.db";
-    builder.Services.AddDbContext<KioskDbContext>(options =>
+    var sqliteConnectionString = @"Data Source=E:\coding\pab\dbs\Food_Retailer.db";
+    builder.Services.AddDbContext<FoodWarehouseDbContext>(options =>
         options.UseSqlite(sqliteConnectionString));
 
     // rejestracja walidatora
@@ -50,7 +50,7 @@ try
     builder.Services.AddScoped<IValidator<UpdateSupplierDto>, RegisterUpdateSupplierDtoValidator>();
 
 
-    builder.Services.AddScoped<IKioskUnitOfWork, KioskUnitOfWork>();
+    builder.Services.AddScoped<IFoodWarehouseUnitOfWork, FoodWarehouseUnitOfWork>();
     builder.Services.AddScoped<IProductRepository, ProductRepository>();
     builder.Services.AddScoped<DataSeeder>();
     builder.Services.AddScoped<IProductService, ProductService>();

@@ -27,7 +27,7 @@ namespace SaleKiosk.Application.Validators
         //        .GreaterThan(0);
         //}
 
-        public RegisterCreateProductDtoValidator(IKioskUnitOfWork unitOfWork)
+        public RegisterCreateProductDtoValidator(IFoodWarehouseUnitOfWork unitOfWork)
         {
             RuleFor(p => p.Name)
                 .NotEmpty()

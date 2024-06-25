@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace SaleKiosk.Application.Mappings
 {
-    public class KioskMappingProfile : Profile
+    public class FoodWarehouseMappingProfile : Profile
     {
-        public KioskMappingProfile()
+        public FoodWarehouseMappingProfile()
         {
             CreateMap<Product, ProductDto>();
             CreateMap<CreateProductDto, Product>()

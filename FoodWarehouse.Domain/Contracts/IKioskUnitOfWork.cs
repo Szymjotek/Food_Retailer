@@ -1,4 +1,4 @@
-﻿namespace SaleKiosk.Domain.Contracts
+﻿namespace FoodWarehouse.Domain.Contracts
 {
     public interface IKioskUnitOfWork : IDisposable
     {

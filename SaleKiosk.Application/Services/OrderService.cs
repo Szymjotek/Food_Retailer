@@ -8,10 +8,10 @@ namespace SaleKiosk.Application.Services
 {
     public class OrderService : IOrderService
     {
-        private readonly IKioskUnitOfWork _uow;
+        private readonly IFoodWarehouseUnitOfWork _uow;
         private readonly IMapper _mapper;
 
-        public OrderService(IKioskUnitOfWork unitOfWork, IMapper mapper)
+        public OrderService(IFoodWarehouseUnitOfWork unitOfWork, IMapper mapper)
         {
             this._uow = unitOfWork;
             this._mapper = mapper;

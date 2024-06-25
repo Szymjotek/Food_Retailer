@@ -6,9 +6,9 @@ namespace SaleKiosk.Infrastructure.Repositories
 {
     public class OrderRepository : Repository<Order>, IOrderRepository
     {
-        private readonly KioskDbContext _kioskDbContext;
+        private readonly FoodWarehouseDbContext _kioskDbContext;
 
-        public OrderRepository(KioskDbContext context)
+        public OrderRepository(FoodWarehouseDbContext context)
             : base(context)
         {
             _kioskDbContext = context;

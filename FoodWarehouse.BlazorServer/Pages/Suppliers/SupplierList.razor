@@ -1,0 +1,374 @@
+﻿@page "/supplier"
+@inject ISupplierService _supplierService
+@inject NavigationManager _navigationManager
+@inject IJSRuntime _js
+
+<PageTitle>Supplier List</PageTitle>
+
+<h1 class="page-title">Supplier List</h1>
+<div class="button-container">
+    <a href="supplier/create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Create New Supplier
+    </a>
+</div>
+<br />
+
+<RadzenDataGrid Data="@_supplierList" TItem="SupplierDto" AllowFiltering="true" AllowSorting="true" AllowPaging="true" PageSize="10" FilterMode="FilterMode.Advanced" LogicalFilterOperator="LogicalFilterOperator.And">
+    <Columns>
+        <RadzenDataGridColumn TItem="SupplierDto" Property="SupplierName" Title="Name" Width="300px" />
+        <RadzenDataGridColumn TItem="SupplierDto" Property="Address" Title="Address" Width="300px" />
+        <RadzenDataGridColumn TItem="SupplierDto" Property="PhoneNumber" Title="Phone Number" Width="200px" />
+        <RadzenDataGridColumn TItem="SupplierDto" Title="Action" Width="300px" Filterable="false" Sortable="false">
+            <Template Context="data">
+                <div class="action-buttons">
+                    <button class="btn btn-warning action-btn m-1" @onclick="@(() => UpdateSupplier(data.Id))">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-danger action-btn m-1" @onclick="@(() => DeleteSupplier(data.Id))">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    private List<SupplierDto> _supplierList = new();
+
+    protected override void OnInitialized()
+    {
+        _supplierList = _supplierService.GetAll();
+    }
+
+    protected async Task DeleteSupplier(int id)
+    {
+        var supplier = _supplierList.First(q => q.Id == id);
+        var confirm = await _js.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {supplier.SupplierName}?");
+        if (confirm)
+        {
+            _supplierService.Delete(id);
+            _supplierList = _supplierService.GetAll(); // Refresh the list after deletion
+        }
+    }
+
+    protected void UpdateSupplier(int id)
+    {
+        _navigationManager.NavigateTo($"supplier/edit/{id}");
+    }
+}
+
+<style>
+    .page-title {
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 2em;
+        font-weight: bold;
+    }
+
+    .button-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        font-size: 1em;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-right: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .btn-primary {
+        background-color: #1a73e8;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: #155cb0;
+        }
+
+    .btn-warning {
+        background-color: #f0ad4e;
+        color: white;
+    }
+
+        .btn-warning:hover {
+            background-color: #ec971f;
+        }
+
+    .btn-danger {
+        background-color: #d9534f;
+        color: white;
+    }
+
+        .btn-danger:hover {
+            background-color: #c9302c;
+        }
+
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .m-1 {
+        margin: 5px;
+    }
+
+    .action-btn {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+
+    /* Custom styles for Radzen DataGrid headers */
+    .radzen-data-table .rz-column-header-content {
+        background-color: #4caf50 !important;
+        color: white !important;
+        font-weight: bold !important;
+        text-transform: uppercase !important;
+        font-size: 1.1em !important;
+        text-align: center !important;
+        border-bottom: 2px solid #333 !important;
+        padding: 10px !important;
+    }
+
+    .radzen-data-table .rz-datatable-header {
+        text-align: center !important;
+    }
+
+    .radzen-data-table .rz-cell {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .radzen-data-table .rz-paginator {
+        justify-content: center;
+    }
+
+    .radzen-data-table .rz-datatable-tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+
+
+
+
+
+
+
+
+
+
+@*@page "/product"
+@inject IProductService _productService
+@inject IJSRuntime _js
+
+<PageTitle>Product list</PageTitle>
+<h1>Product list</h1>
+    
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in ProductList)
+            {
+                <tr>
+                    <td>@p.Name</td>
+                    <td>@p.Description</td>
+                    <td>@p.UnitPrice</td>
+                    <td>
+                        <button class="btn bg-danger" @onclick="()=>DeleteProduct(p.Id)"> Delete </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@code {
+    private List<ProductDto> ProductList = null;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ProductList = _productService.GetAll();
+    }
+
+    protected async Task DeleteProduct(int id)
+    {
+        var product = ProductList.First(q => q.Id == id);
+        var confirm = await _js.InvokeAsync<bool>("confirm", $"Are You Sure You Want To Delete {product.Name}?");
+        if (confirm)
+        {
+            _productService.Delete(id);
+            OnInitialized();
+        }
+    }
+}
+*@
+
+@*@page "/product"
+@inject IProductService _productService
+
+<PageTitle>Product list</PageTitle>
+<h1>Product list</h1>
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in ProductList)
+            {
+                <tr>
+                    <td>@p.Name</td>
+                    <td>@p.Description</td>
+                    <td>@p.UnitPrice</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@code {
+    private List<ProductDto> ProductList = null;
+    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ProductList = _productService.GetAll();
+    }
+}
+*@
+
+
+
+
+
+
+@*@page "/product"
+@inject IProductService ProductService
+
+<PageTitle>Product</PageTitle>
+<h1>Product</h1>
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in ProductList)
+            {
+                <tr>
+                    <td>@p.Name</td>
+                    <td>@p.Description</td>
+                    <td>@p.UnitPrice</td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
+
+@code {
+    private List<ProductDto> ProductList;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        ProductList = ProductService.GetAll();
+    }
+}*@
+
+
+
+
+@*@page "/product"
+
+<PageTitle>Product</PageTitle>
+<h1>Product</h1>
+
+<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var p in ProductList)
+            {
+                <tr>
+                    <td>@p.Name</td>
+                    <td>@p.Description</td>
+                    <td>@p.UnitPrice</td>
+                </tr>
+            }
+        </tbody>
+        
+    </table>
+</div>
+
+@code {
+    public List<ProductDto> ProductList = new List<ProductDto>()
+    {
+        new ProductDto()
+        {
+            Name = "Kawa",
+            Description = "Czarna kawa",
+            UnitPrice = 2m
+        },
+        new ProductDto()
+        {
+            Name = "Herbata",
+            Description = "Pyszna herbata",
+            UnitPrice = 4m
+        }
+    };
+
+    public ProductDto MyProduct = new ProductDto()
+        {
+            Name = "Kawa",
+            Description = "Czarna kawa",
+            UnitPrice = 2m
+        };
+
+    public class ProductDto
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public decimal UnitPrice { get; set; }
+    }
+}
+*@

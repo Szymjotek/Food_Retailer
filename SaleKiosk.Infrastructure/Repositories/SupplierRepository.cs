@@ -7,9 +7,9 @@ namespace SaleKiosk.Infrastructure.Repositories
 {
     public class SupplierRepository : Repository<Supplier>, ISupplierRepository
     {
-        private readonly KioskDbContext _kioskDbContext;
+        private readonly FoodWarehouseDbContext _kioskDbContext;
 
-        public SupplierRepository(KioskDbContext context)
+        public SupplierRepository(FoodWarehouseDbContext context)
             : base(context)
         {
             _kioskDbContext = context;

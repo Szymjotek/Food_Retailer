@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaleKiosk.WebAPI", "SaleKiosk.WebAPI\SaleKiosk.WebAPI.csproj", "{2EFE8E97-8ADF-472A-92F7-CC7A6E82CE18}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoodWarehouse.WebAPI", "SaleKiosk.WebAPI\FoodWarehouse.WebAPI.csproj", "{2EFE8E97-8ADF-472A-92F7-CC7A6E82CE18}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaleKiosk.Application", "SaleKiosk.Application\SaleKiosk.Application.csproj", "{96BDC9D7-5418-4EB0-9278-2B6FBD57A2E9}"
 EndProject

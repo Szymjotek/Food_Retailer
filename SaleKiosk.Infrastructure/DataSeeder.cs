@@ -7,9 +7,9 @@ namespace SaleKiosk.Infrastructure
 {
     public class DataSeeder
     {
-        private readonly KioskDbContext _dbContext;
+        private readonly FoodWarehouseDbContext _dbContext;
 
-        public DataSeeder(KioskDbContext context)
+        public DataSeeder(FoodWarehouseDbContext context)
         {
             _dbContext = context;
         }
